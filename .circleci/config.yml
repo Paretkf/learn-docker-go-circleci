@@ -35,3 +35,19 @@ jobs:
               echo "This is ${CIRCLE_BRANCH}"
             fi
       - run: echo build-docker done!
+      - run:
+        name: "Trigger rancher upgrade"
+          # batch_size upgrade ทีละ 3 container (1 ใน 2 ของ container ทั้งหมด)
+          # start_first กิน resource ก่อนเลยถ้า deploy ได้ก็จะปิดเครื่องเก่า
+          # auto_complete ไม่ต้องกด upgrade เอง
+          command: |
+            docker run --rm -it \
+              -e CATTLE_ACCESS_KEY="$CATTLE_ACCESS_KEY" \
+              -e CATTLE_SECRET_KEY="$CATTLE_SECRET_KEY" \
+              -e CATTLE_URL="$CATTLE_URL" \
+              etlweather/gaucho upgrade $RANCHER_SERVICE \
+              --imageUuid 'docker:paretk/example-go-circle:latest' \
+              --batch_size 3 --start_first \
+              --auto_complete --timeout 600 \
+              /
+      - run: echo build-docker done!
