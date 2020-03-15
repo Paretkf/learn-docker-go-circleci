@@ -8,14 +8,12 @@ jobs:
     docker:
       # specify the version
       # base image
-      - image: circleci/golang:1.9
+      - image: golang:1.13.3-alpine
 
     working_directory: /go/src/app
     # มีกี่ step ก็ได้
     steps:
       - checkout
-
-      # specify any bash command here prefixed with `run: `
       - run: go mod download
       - run: go build -o ./main ./main.go
       - run: echo done!
