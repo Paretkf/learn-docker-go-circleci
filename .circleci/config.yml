@@ -36,7 +36,7 @@ jobs:
             fi
       - run: echo build-docker done!
       - run:
-        name: "Trigger rancher upgrade"
+          name: "Trigger rancher upgrade"
           # batch_size upgrade ทีละ 3 container (1 ใน 2 ของ container ทั้งหมด)
           # start_first กิน resource ก่อนเลยถ้า deploy ได้ก็จะปิดเครื่องเก่า
           # auto_complete ไม่ต้องกด upgrade เอง
