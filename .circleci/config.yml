@@ -24,7 +24,6 @@ jobs:
           name: "Build docker image and push to docker hub"
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              cp Dockerfile.production Dockerfile
               docker build -t paretk/example-go-circle:latest .
               docker build -t paretk/example-go-circle:${CIRCLE_SHA1} .
               docker push paretk/example-go-circle:latest
