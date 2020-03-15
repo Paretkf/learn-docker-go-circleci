@@ -8,7 +8,7 @@ jobs:
     docker:
       # specify the version
       # base image
-      - image: golang:1.13.3-alpine
+      - image: circleci/golang:1.13.3-stretch
 
     working_directory: /go/src/app
     # มีกี่ step ก็ได้
