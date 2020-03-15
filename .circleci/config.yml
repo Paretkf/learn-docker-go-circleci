@@ -8,23 +8,31 @@ jobs:
     docker:
       # specify the version
       # base image
-      - image: circleci/golang:1.9
+      - image: circleci/golang:1.13.3-stretch
 
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
-    #### TEMPLATE_NOTE: go expects specific checkout path representing url
-    #### expecting it in the form of
-    ####   /go/src/github.com/circleci/go-tool
-    ####   /go/src/bitbucket.org/circleci/go-tool
     working_directory: /go/src/app
     # มีกี่ step ก็ได้
     steps:
       - checkout
-
-      # specify any bash command here prefixed with `run: `
       - run: go mod download
       - run: go build -o ./main ./main.go
       - run: echo done!
+      # deploy dockerhub
+      - setup_remote_docker
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - run:
+          name: "Build docker image and push to docker hub"
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              cp Dockerfile.production Dockerfile
+              docker build -t paretk/example-go-circle:latest .
+              docker build -t paretk/example-go-circle:${CIRCLE_SHA1} .
+              docker push paretk/example-go-circle:latest
+              docker push paretk/example-go-circle:${CIRCLE_SHA1}
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              docker build -t paretk/example-go-circle-staging:latest .
+              docker push paretk/example-go-circle-staging:latest
+            else
+              echo "This is ${CIRCLE_BRANCH}"
+            fi
+      - run: echo build-docker done!
